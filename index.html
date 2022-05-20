@@ -92,6 +92,9 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
             <div>Name</div>
             <div>Premier Inn London Gatwick Airport - North Terminal</div>
         </div>
+        <div class="floor-info">
+        </div>
+        <div id="floor-data"></div>
     </div>
     <span class="open-nav-button-right" onclick="hideSidebar()"><strong>&times;</strong></span>
 </div>
@@ -228,6 +231,28 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
 
 
     map.on('load', () => {
+        map.addLayer({
+            'id': '3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 15,
+            'paint': {
+                'fill-extrusion-color': '#aaa',
+                'fill-extrusion-height': {
+                    'type': 'identity',
+                    'property': 'height'
+                },
+                'fill-extrusion-base': {
+                    'type': 'identity',
+                    'property': 'min_height'
+                },
+                'fill-extrusion-opacity': .6
+            }
+        });
+
+        
         map.addSource('floorplan', {
             'type': 'geojson',
             /*
@@ -263,11 +288,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
             descEl.classList.add("desc-show");
             var feature = e.features[0];
             const { id, name, desc, color } = feature.properties;
-            var infoWrapper = document.getElementById("floor-info");
-            infoWrapper.innerHTML = `<div><strong>id: </strong> ${id}</div>
-                                        <div><strong>name: </strong> ${desc}</div>
-                                        <div style="background-color: ${color}; height:70px; width: 120px; border-radius: 5px; padding:10px; margin-top: 5px">
-                                        `;
+            var infoWrapper = document.querySelectorAll(".floor-info");
+            (infoWrapper[infoWrapper.length -1]).innerHTML = `<div>Name: ${desc}</div>
+                                    <div style="background-color: ${color}; height:70px; width: 120px; border-radius: 5px; padding:10px; margin-top: 5px">
+                                    </div>`;
         });
 
 
