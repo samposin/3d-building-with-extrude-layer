@@ -6,6 +6,7 @@
         "properties": {
           "id": 1,
           "name": "ground",
+          "image": "1.jpg",
           "desc": "ground floor",
           "color": "white",
           "height": 12,
@@ -44,6 +45,7 @@
         "properties": {
           "id": 2,
           "name": "first",
+          "image": "2.jpg",
           "desc": "first floor",
           "color": "white",
           "height": 23,
@@ -86,6 +88,7 @@
         "properties": {
           "id": 3,
           "name": "second",
+          "image": "3.jpg",
           "desc": "second floor",
           "color": "white",
           "height": 32,
@@ -128,6 +131,7 @@
         "properties": {
           "id": 4,
           "name": "third",
+          "image": "4.jpg",
           "desc": "third floor",
           "color": "white",
           "height": 41,
@@ -170,6 +174,7 @@
         "properties": {
           "id": 5,
           "name": "forth",
+          "image": "5.jpg",
           "desc": "forth floor",
           "color": "white",
           "height": 50,
@@ -212,6 +217,7 @@
         "properties": {
           "id": 6,
           "name": "fifth",
+          "image": "6.jpg",
           "desc": "fifth floor",
           "color": "white",
           "height": 59.5,
@@ -254,6 +260,7 @@
         "properties": {
           "id": 7,
           "name": "top",
+          "image": "7.jpg",
           "desc": "top floor",
           "color": "white",
           "height": 67,

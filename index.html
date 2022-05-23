@@ -17,7 +17,7 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
 .desc {
     height: 85vh;
     width: 350px;
-    background-color: rgb(171 171 171);
+    background-color: rgb(255, 255, 255);
     border-radius: 5px;
     padding: 15px;
     position: fixed;
@@ -32,7 +32,7 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
     transition: all 0.3s linear;
 }
 .open-nav-button-right {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 35px;
 }
 .open-nav-button-right:hover {
@@ -45,7 +45,7 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
 .floor-info {
     display: flex;
     justify-content: space-between;
-    color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
 }
 .floor-info:first-child {
     width: 40%;
@@ -53,6 +53,13 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
 .floor-info div {
     font-size: 16px;
     padding: 5px;
+}
+.custom-image {
+    height: auto;
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
 }
 
     </style>
@@ -94,7 +101,9 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
         </div>
         <div class="floor-info">
         </div>
-
+        <div id="img-wrapper">
+            
+        </div>
     </div>
     <span class="open-nav-button-right" onclick="hideSidebar()"><strong>&times;</strong></span>
 </div>
@@ -291,11 +300,13 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
             const descEl = document.getElementById("desc");
             descEl.classList.add("desc-show");
             var feature = e.features[0];
-            const { id, name, desc, color } = feature.properties;
-            var infoWrapper = document.querySelectorAll(".floor-info");
-            (infoWrapper[infoWrapper.length -1]).innerHTML = `<div>Name: ${desc}</div>
-                                    <div style="background-color: ${color}; height:70px; width: 120px; border-radius: 5px; padding:10px; margin-top: 5px">
-                                    </div>`;
+            const { id, name, desc, color, image } = feature.properties;
+            // var infoWrapper = document.querySelectorAll(".floor-info");
+            // (infoWrapper[infoWrapper.length -1]).innerHTML = `<div>Name: ${desc}</div>
+            //                         <img src="./images/${image}" style="height:70px; width: 120px; border-radius: 5px; padding:10px; margin-top: 5px">
+            //                         </img>`;
+            var imgWrapper = document.getElementById('img-wrapper');
+            imgWrapper.innerHTML = `<img src="./images/${image}" class="custom-image"/>`;
         });
 
 
