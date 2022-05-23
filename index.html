@@ -94,7 +94,7 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
         </div>
         <div class="floor-info">
         </div>
-        <div id="floor-data"></div>
+
     </div>
     <span class="open-nav-button-right" onclick="hideSidebar()"><strong>&times;</strong></span>
 </div>
@@ -111,18 +111,17 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-119.7415593266487, 47.2372796687411],
-        zoom: 18,
-        pitch: 67.5,
-        bearing: 38.5,
+        center: [ -74.00618746876717, 40.71363155423475],//[-119.7415593266487, 47.2372796687411],
+        zoom: 17,
+        pitch: 66,
+        bearing: 130,
         antialias: true
     });
 
-
     // parameters to ensure the model is georeferenced correctly on the map
-    const modelOrigin = [-119.7415593266487, 47.2372796687411];
+    const modelOrigin = [ -74.00618746876717, 40.71363155423475];
     const modelAltitude = 0;
-    const modelRotate = [1.5707963267948966, 15.3, 0];// [Math.PI / 2, 0, 0];
+    const modelRotate = [Math.PI / 2, 2.58, 0]; //[Math.PI / 2, 0, 0];
 
     const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(
         modelOrigin,
@@ -170,6 +169,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
             loader.load(
                 './hotel.glb',
                 (gltf) => {
+                    building = gltf.scene.children[0];
+                    building.scale.set(2.8, 2.8, 2.8);
                     this.scene.add(gltf.scene);
                 }
             );
@@ -238,6 +239,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
             'filter': ['==', 'extrude', 'true'],
             'type': 'fill-extrusion',
             'minzoom': 15,
+            'zindex':1,
             'paint': {
                 'fill-extrusion-color': '#aaa',
                 'fill-extrusion-height': {
@@ -248,11 +250,11 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
                     'type': 'identity',
                     'property': 'min_height'
                 },
-                'fill-extrusion-opacity': .6
+                'fill-extrusion-opacity': 0.6
             }
         });
 
-        
+
         map.addSource('floorplan', {
             'type': 'geojson',
             /*
@@ -283,7 +285,9 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
             }
         });
 
+
         map.on('click', 'room-extrusion', function(e) {
+            console.log("pitch: ", map.getPitch(), "bearing: ", map.getBearing());
             const descEl = document.getElementById("desc");
             descEl.classList.add("desc-show");
             var feature = e.features[0];
@@ -326,6 +330,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
                 'id': 'room-extrusion-1',
                 'type': 'fill-extrusion',
                 'source': 'floorplan-1',
+                'zindex':2,
                 'paint': {
                     // Get the `fill-extrusion-color` from the source `color` property.
                     'fill-extrusion-color': ['get', 'color'],
@@ -358,12 +363,11 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
         });
 
         setTimeout(() => {
-
             var animationOptions = {
-                bearing: 130,
-                center: [-119.7415593266487, 47.2372796687411],
-                zoom: 19,
-                pitch: 66,
+                bearing: 45,
+                center: [ -74.00618746876717, 40.71363155423475],
+                zoom: 17.85,
+                pitch: 65,
                 // These options control the flight curve, making it move
                 // slowly and zoom out almost completely before starting
                 // to pan.
