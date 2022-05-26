@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+
+
+    <title>map extrude</title>
 
 
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
@@ -47,12 +53,12 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
     justify-content: space-between;
     color: rgb(0, 0, 0);
 }
-.floor-info:first-child {
+/* .floor-info:first-child {
     width: 40%;
-}
+} */
 .floor-info div {
-    font-size: 16px;
-    padding: 5px;
+    font-size: 14px;
+    padding: 3px;
 }
 .custom-image {
     height: auto;
@@ -70,40 +76,7 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
 <div id="map"></div>
 
 <div id="desc" class="desc">
-    <div class="info-wrapper">
-        <div class="floor-info">
-            <div>City Name</div>
-            <div>London</div>
-        </div>
-        <div class="floor-info">
-            <div>Location</div>
-            <div>lon: -0.124627, lat: 51.500729</div>
-        </div>
-        <div class="floor-info">
-            <div>Country Name</div>
-            <div>United Kingdom</div>
-        </div>
-        <div class="floor-info">
-            <div>Country Code</div>
-            <div>GB</div>
-        </div>
-        <div class="floor-info">
-            <div>Hotels Count</div>
-            <div>8395</div>
-        </div>
-        <div class="floor-info">
-            <div>Hotel Score</div>
-            <div>793958.0</div>
-        </div>
-        <div class="floor-info">
-            <div>Name</div>
-            <div>Premier Inn London Gatwick Airport - North Terminal</div>
-        </div>
-        <div class="floor-info">
-        </div>
-        <div id="img-wrapper">
-            
-        </div>
+    <div class="info-wrapper" id="info-wrapper">
     </div>
     <span class="open-nav-button-right" onclick="hideSidebar()"><strong>&times;</strong></span>
 </div>
@@ -113,6 +86,10 @@ body { margin: 0; padding: 0; box-sizing: border-box; }
 function hideSidebar() {
     const descEl = document.getElementById("desc");
     descEl.classList.remove("desc-show");
+    if(map.getSource('floorplan-clicked')){
+        map.removeLayer('floor-clicked-layer');
+        map.removeSource('floorplan-clicked');
+    }
 }
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zNWt3dXV5NjkifQ.1x58UW0rofTwVJguzB4xiQ';
@@ -296,17 +273,93 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGN3YWdlbGF3IiwiYSI6ImNranVwd3A5ZTAwcm8yc25zN
 
 
         map.on('click', 'room-extrusion', function(e) {
-            console.log("pitch: ", map.getPitch(), "bearing: ", map.getBearing());
+            var infoWrapper = document.getElementById('info-wrapper');
             const descEl = document.getElementById("desc");
             descEl.classList.add("desc-show");
             var feature = e.features[0];
-            const { id, name, desc, color, image } = feature.properties;
-            // var infoWrapper = document.querySelectorAll(".floor-info");
-            // (infoWrapper[infoWrapper.length -1]).innerHTML = `<div>Name: ${desc}</div>
-            //                         <img src="./images/${image}" style="height:70px; width: 120px; border-radius: 5px; padding:10px; margin-top: 5px">
-            //                         </img>`;
-            var imgWrapper = document.getElementById('img-wrapper');
-            imgWrapper.innerHTML = `<img src="./images/${image}" class="custom-image"/>`;
+            const { id, name, desc, color, image, region, price, area, no_of_beds, no_of_bathrooms, type, built_in, heating, cooling, parking, price_sq_feet, address } = feature.properties;
+            
+            
+            var clickedFeatures = {
+                "type": "FeatureCollection",
+                "features": [
+                                {
+                                "type": "Feature",
+                                "properties": { ...feature.properties },
+                                "geometry": { ...feature.geometry }
+                                }
+                            ]
+            }
+            if(map.getSource('floorplan-clicked')){
+                map.removeLayer('floor-clicked-layer');
+                map.removeSource('floorplan-clicked');
+            }
+            map.addSource('floorplan-clicked', {
+            'type': 'geojson',
+            'data': clickedFeatures
+            });
+            map.addLayer({
+                'id': 'floor-clicked-layer',
+                'type': 'fill-extrusion',
+                'source': 'floorplan-clicked',
+                'zindex':2,
+                'paint': {
+                    // Get the `fill-extrusion-color` from the source `color` property.
+                    'fill-extrusion-color': '#00DBFF',
+
+                    // Get `fill-extrusion-height` from the source `height` property.
+                    'fill-extrusion-height': ['get', 'height'],
+
+                    // Get `fill-extrusion-base` from the source `base_height` property.
+                    'fill-extrusion-base': ['get', 'base_height'],
+
+                    
+                    'fill-extrusion-vertical-gradient': false,
+
+                    // Make extrusions slightly opaque to see through indoor walls.
+                    'fill-extrusion-opacity': 1
+                }
+            });
+            infoWrapper.innerHTML = 
+                        `<div class="floor-info">
+                            <div>Region</div><div> ${region}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Price</div><div> ${price}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Area</div><div> ${area}</div>
+                        </div>    
+                        <div class="floor-info">
+                            <div>No of beds</div><div> ${no_of_beds}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>No. of bathrooms</div><div> ${no_of_bathrooms}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Type</div><div> ${type}</div>
+                        </div>
+
+                        <div class="floor-info">
+                            <div>Built in</div><div> ${built_in}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Heating</div><div> ${heating}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Cooling</div><div> ${cooling}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Parking</div><div> ${parking}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Price sq feet</div><div> ${price_sq_feet}</div>
+                        </div>
+                        <div class="floor-info">
+                            <div>Address</div><div> ${address}</div>
+                        </div>
+                        <img src="./images/${image}" class="custom-image"/>`;
+            
         });
 
 
